@@ -1,0 +1,44 @@
+name: clean-arch
+
+services:
+
+  # BACKEND (Spring Boot)
+  backend:
+    container_name: clean-arch
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-app:${APP_DB_PORT}/${APP_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${APP_DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${APP_DB_PASSWORD}
+      - SERVER_SERVLET_CONTEXT_PATH=/
+      - JWT_SECRET=${JWT_SECRET}
+      - APP_DB_HOST=${APP_DB_HOST}
+    depends_on:
+      db-app:
+        condition: service_healthy
+
+  # DATABASE FOR BACKEND
+  db-app:
+    image: postgres:16-alpine
+    container_name: db-app
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: clean-arch-db
+      POSTGRES_USER: application
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD}
+    volumes:
+      - pgdata_app:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U application -d clean-arch-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+volumes:
+  pgdata_app:
