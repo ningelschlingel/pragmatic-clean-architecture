@@ -41,8 +41,8 @@ public class UserController {
         return createUserUseCase.execute(CreateUserHttpMapper.fromRequest(request))
             .map(user -> ResponseEntity.ok(CreateUserHttpMapper.toResponse(user)))
             .getOrElseGet(failure -> switch (failure) {
-                case UserExistsAlready e -> ResponseEntity.status(409).build();
-                case UserDataInvalid e -> ResponseEntity.status(409).build();
+                case UserExistsAlready _ -> ResponseEntity.status(409).build();
+                case UserDataInvalid _ -> ResponseEntity.status(409).build();
             });
     }
 
@@ -52,7 +52,7 @@ public class UserController {
         return findUserByIdUseCase.execute(new UserId(userId))
             .map(user -> ResponseEntity.ok(FindUserHttpMapper.toResponse(user)))
             .getOrElseGet(failure -> switch (failure) {
-                case UserNotFound e -> ResponseEntity.status(409).build();
+                case UserNotFound _ -> ResponseEntity.status(409).build();
             });
     }
 
@@ -61,7 +61,7 @@ public class UserController {
         return deleteUserByIdUseCase.execute(new UserId(userId))
             .map(success -> ResponseEntity.noContent().<Void>build()) 
             .getOrElseGet(failure -> switch (failure) {
-                case DeleteUserNotAllowed e -> ResponseEntity.status(403).build();
+                case DeleteUserNotAllowed _ -> ResponseEntity.status(403).build();
             });
     }
     
