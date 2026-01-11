@@ -1,10 +1,12 @@
 spring:
+  config:
+    import: "optional:file:.env[.properties]" # import secrets and config
   application:
-    name: blueprint-api
+    name: pragmatic-clean-architecture
   datasource:
-    url: jdbc:postgresql://localhost:5432/clean-arch-db
-    username: application
-    password: application
+    url: jdbc:postgresql://localhost:5432/${APP_DB_NAME}
+    username: ${APP_DB_USERNAME}
+    password: ${APP_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update

@@ -18,7 +18,14 @@ repositories {
 	mavenCentral()
 }
 
+def jjwtVersion = '0.12.6' 
+
 dependencies {
+	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'io.vavr:vavr:0.10.4'
@@ -28,6 +35,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Test Containers at a later point
+	// testImplementation platform('org.testcontainers:testcontainers-bom:1.19.3')
+	// testImplementation "org.testcontainers:postgresql:1.19.3"
+	// testImplementation "org.testcontainers:junit-jupiter:1.19.3"
 }
 
 tasks.named('test') {
