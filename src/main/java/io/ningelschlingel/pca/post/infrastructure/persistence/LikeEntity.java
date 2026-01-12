@@ -14,13 +14,12 @@ public class LikeEntity {
     @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private UUID likerId;
 
     @Column(nullable = false)
     private UUID postId;
 
-    // JPA requires a no-arg constructor
     protected LikeEntity() {}
 
     public LikeEntity(UUID id, UUID likerId, UUID postId) {

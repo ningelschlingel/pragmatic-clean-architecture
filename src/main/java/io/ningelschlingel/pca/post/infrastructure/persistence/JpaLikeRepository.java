@@ -12,22 +12,28 @@ import io.ningelschlingel.pca.post.core.port.out.LikeRepository;
 import io.ningelschlingel.pca.shared.core.domain.UserId;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * JPA implementation of the {@link LikeRepository} output port.
+ * This adapter coordinates between the domain model and the persistence entities 
+ * using Spring Data JPA.
+ */
 @Repository
 @RequiredArgsConstructor
 public class JpaLikeRepository implements LikeRepository {
 
     private final SpringDataLikeRepository springDataLikeRepository;
+    private final LikePersistenceMapper likePersistenceMapper;
 
     @Override
     public Like save(Like like) {
-        LikeEntity entity = LikeJpaMapper.fromDomain(like);
+        LikeEntity entity = likePersistenceMapper.fromDomain(like);
         LikeEntity saved = springDataLikeRepository.save(entity);
-        return LikeJpaMapper.toDomain(saved);
+        return likePersistenceMapper.toDomain(saved);
     }
 
     @Override
     public List<Like> findByPostId(PostId id) {
-        return springDataLikeRepository.findByPostId(id.value()).stream().map(LikeJpaMapper::toDomain).toList();
+        return springDataLikeRepository.findByPostId(id.value()).stream().map(likePersistenceMapper::toDomain).toList();
     }
 
     @Override
@@ -37,7 +43,6 @@ public class JpaLikeRepository implements LikeRepository {
 
     @Override
     public Optional<Like> findByLikerIdAndPostId(UserId userId, PostId postId) {
-        return springDataLikeRepository.findByLikerIdAndPostId(userId, postId).map(LikeJpaMapper::toDomain);
+        return springDataLikeRepository.findByLikerIdAndPostId(userId, postId).map(likePersistenceMapper::toDomain);
     }
-    
 }

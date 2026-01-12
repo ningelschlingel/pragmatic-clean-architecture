@@ -1,6 +1,7 @@
 package io.ningelschlingel.pca.userauth.core.application.register;
 
 import io.ningelschlingel.pca.shared.core.domain.UserId;
+import io.ningelschlingel.pca.shared.infrastructure.security.JwtService;
 import io.ningelschlingel.pca.userauth.core.application.register.failure.RegisterUserFailure;
 import io.ningelschlingel.pca.userauth.core.application.register.failure.AuthDataInvalid;
 import io.ningelschlingel.pca.userauth.core.application.register.failure.UserAuthExists;
@@ -15,19 +16,22 @@ public class RegisterUseCase {
 
     private final UserAuthRepository userAuthRepository;
     private final PasswordHasher passwordHasher;
-    
-    public Either<RegisterUserFailure, UserAuth> execute(RegisterCommand command) {
+    private final JwtService jwtService;
+
+    public Either<RegisterUserFailure, RegisterResult> execute(RegisterCommand command) {
         try {
 
             if (userAuthRepository.findByEmail(command.email()).isPresent()) {
                 return Either.left(new UserAuthExists());
             }
 
-            UserAuth userToSave = new UserAuth(UserId.generate(), command.email(), passwordHasher.hash(command.rawPassword()));
+            UserAuth userToSave = new UserAuth(UserId.generate(), command.email(),
+                    passwordHasher.hash(command.rawPassword()));
             UserAuth savedUser = userAuthRepository.save(userToSave);
-    
-            return Either.right(savedUser);
-            
+
+            return Either.right(new RegisterResult(jwtService.createToken(savedUser.getId(), 
+                    savedUser.getEmail()), savedUser.getId(), savedUser.getEmail()));
+
         } catch (Exception e) {
             return Either.left(new AuthDataInvalid());
         }

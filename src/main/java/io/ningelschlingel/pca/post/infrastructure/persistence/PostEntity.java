@@ -14,13 +14,12 @@ public class PostEntity {
     @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
     private String content;
 
-    // JPA requires a no-arg constructor
     protected PostEntity() {}
 
     public PostEntity(UUID id, String title, String content) {

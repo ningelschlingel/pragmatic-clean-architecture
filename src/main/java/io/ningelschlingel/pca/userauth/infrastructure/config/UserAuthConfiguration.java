@@ -20,7 +20,7 @@ public class UserAuthConfiguration {
 
     @Bean
     public RegisterUseCase registerUseCase() {
-        return new RegisterUseCase(jpaUserAuthRepository, bCryptPasswordHasher);
+        return new RegisterUseCase(jpaUserAuthRepository, bCryptPasswordHasher, jwtService);
     }
 
     @Bean
