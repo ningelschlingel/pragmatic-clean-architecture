@@ -1,4 +1,4 @@
-package io.ningelschlingel.pca.post.infrastructure.web.findpost;
+package io.ningelschlingel.pca.post.infrastructure.web.payload;
 
 import java.util.UUID;
 

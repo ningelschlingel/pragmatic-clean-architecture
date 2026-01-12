@@ -1,4 +1,4 @@
-package io.ningelschlingel.pca.userauth.infrastructure.web.login;
+package io.ningelschlingel.pca.userauth.infrastructure.web.payload;
 
 public record LoginRequest (
     String email,
