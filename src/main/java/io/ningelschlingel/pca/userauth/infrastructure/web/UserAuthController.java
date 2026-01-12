@@ -32,7 +32,7 @@ public class UserAuthController {
     private final UserAuthHttpMapper userAuthHttpMapper;
 
     @PostMapping("/register") // TODO the usecase needs to delegate user-profile creation and a nice pattern to get the created-location is needed
-    public ResponseEntity<URI> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
         return registerUseCase.execute(userAuthHttpMapper.toCommand(request))
             .map(result -> {
                 URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -42,7 +42,7 @@ public class UserAuthController {
                 return ResponseEntity
                 .created(location)
                 .headers(createJwtCookieHeaders(result.jwtToken()))
-                .<URI>build();
+                .<Void>build();
             })
             .getOrElseGet(failure -> switch (failure) {
                 case UserAuthExists _ -> ResponseEntity.status(409).build();

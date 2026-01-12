@@ -43,14 +43,14 @@ public class PostController {
     private final PostHttpMapper postMapper;
 
     @PostMapping("/create")
-    public ResponseEntity<URI> createPost(@RequestBody CreatePostRequest request) {
+    public ResponseEntity<Void> createPost(@RequestBody CreatePostRequest request) {
         return createPostUseCase.execute(postMapper.toCommand(request))
                 .map(post -> {
                     URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                             .path("/{id}")
                             .buildAndExpand(post.getId().value())
                             .toUri();
-                    return ResponseEntity.created(location).<URI>build();
+                    return ResponseEntity.created(location).<Void>build();
                 }).getOrElseGet(failure -> switch (failure) {
                     case PostDataInvalid _ -> ResponseEntity.status(422).build();
                     case PostNotAllowed _ -> ResponseEntity.status(403).build(); // Use 403 for Not Allowed
