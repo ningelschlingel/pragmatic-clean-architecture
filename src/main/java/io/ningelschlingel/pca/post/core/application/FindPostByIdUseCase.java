@@ -1,7 +1,5 @@
-package io.ningelschlingel.pca.post.core.application.findpost;
+package io.ningelschlingel.pca.post.core.application;
 
-import io.ningelschlingel.pca.post.core.application.findpost.failure.FindPostFailure;
-import io.ningelschlingel.pca.post.core.application.findpost.failure.PostNotFound;
 import io.ningelschlingel.pca.post.core.domain.Post;
 import io.ningelschlingel.pca.post.core.domain.PostId;
 import io.ningelschlingel.pca.post.core.port.out.PostRepository;
@@ -11,11 +9,16 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class FindPostByIdUseCase {
     
+    // Ports
     private final PostRepository postRepository;
 
-    public Either<FindPostFailure, Post> execute(PostId id) {
+    // Failure
+    public sealed interface Failure permits PostNotFound {}
+    public record PostNotFound() implements Failure {}
+
+    public Either<Failure, Post> execute(PostId id) {
         return postRepository.findById(id)
-                .map(Either::<FindPostFailure, Post>right) // wrap found post as Right
+                .map(Either::<Failure, Post>right) // wrap found post as Right
                 .orElseGet(() -> Either.left(new PostNotFound()));
     }
 }

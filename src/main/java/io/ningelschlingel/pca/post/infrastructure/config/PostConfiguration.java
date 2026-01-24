@@ -3,10 +3,10 @@ package io.ningelschlingel.pca.post.infrastructure.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.ningelschlingel.pca.post.core.application.createpost.CreatePostUseCase;
-import io.ningelschlingel.pca.post.core.application.deletepost.DeletePostByIdUseCase;
-import io.ningelschlingel.pca.post.core.application.findpost.FindPostByIdUseCase;
-import io.ningelschlingel.pca.post.core.application.togglelike.ToggleLikeUseCase;
+import io.ningelschlingel.pca.post.core.application.CreatePostUseCase;
+import io.ningelschlingel.pca.post.core.application.DeletePostByIdUseCase;
+import io.ningelschlingel.pca.post.core.application.FindPostByIdUseCase;
+import io.ningelschlingel.pca.post.core.application.ToggleLikeUseCase;
 import io.ningelschlingel.pca.post.core.port.out.LikerExistencePort;
 import io.ningelschlingel.pca.post.infrastructure.persistence.JpaLikeRepository;
 import io.ningelschlingel.pca.post.infrastructure.persistence.JpaPostRepository;

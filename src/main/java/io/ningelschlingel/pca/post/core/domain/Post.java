@@ -1,10 +1,10 @@
 package io.ningelschlingel.pca.post.core.domain;
 
-import io.ningelschlingel.pca.post.core.application.createpost.CreatePostCommand;
 import lombok.Getter;
 
 @Getter
 public class Post {
+    
     private final PostId id;
     private String title;
     private String content;
@@ -15,9 +15,9 @@ public class Post {
         this.content = content;
     }
 
-    public Post(CreatePostCommand command){
-        this.id = command.id();
-        this.title = command.title();
-        this.content = command.content();
-    }
+    // public Post(CreatePostCommand command){
+    //     this.id = command.id();
+    //     this.title = command.title();
+    //     this.content = command.content();
+    // }
 }
