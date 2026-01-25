@@ -4,10 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
+@Getter
+@NoArgsConstructor
 public class UserEntity {
 
     @Id
@@ -19,9 +24,6 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String fullName;
-
-    // JPA requires a no-arg constructor
-    protected UserEntity() {}
 
     public UserEntity(UUID id, String email, String fullName) {
         this.id = id;

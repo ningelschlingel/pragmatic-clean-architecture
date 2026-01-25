@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.ningelschlingel.pca.userprofile.core.application.createuserprofile.CreateUserUseCase;
+import io.ningelschlingel.pca.userprofile.core.application.CreateUserUseCase;
 import io.ningelschlingel.pca.userprofile.core.application.deleteuserprofile.DeleteUserByIdUseCase;
 import io.ningelschlingel.pca.userprofile.core.application.finduserprofile.FindUserByIdUseCase;
 import io.ningelschlingel.pca.userprofile.infrastructure.persistence.JpaUserRepository;

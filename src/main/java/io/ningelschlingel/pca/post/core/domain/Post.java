@@ -14,10 +14,4 @@ public class Post {
         this.title = title;
         this.content = content;
     }
-
-    // public Post(CreatePostCommand command){
-    //     this.id = command.id();
-    //     this.title = command.title();
-    //     this.content = command.content();
-    // }
 }

@@ -34,6 +34,11 @@ public class PostController {
     private final DeletePostByIdUseCase deletePostByIdUseCase;
     private final ToggleLikeUseCase toggleLikeUseCase;
 
+    /**
+     * Create Post
+     * @param request 
+     * @return Location of created post if data was valid, else Http Error
+     */
     @PostMapping("/create")
     public ResponseEntity<Void> createPost(@RequestBody CreatePostRequest request) {
         return createPostUseCase.execute(toCommand(request))
@@ -49,26 +54,39 @@ public class PostController {
                 });
     }
 
+    // Create Post: request-obj and mapper
     private record CreatePostRequest(String title, String content) {}
     private CreatePostUseCase.Command toCommand(CreatePostRequest request) {
         return new CreatePostUseCase.Command(request.title(), request.title());
     }
 
+    /**
+     * Get Post with ID
+     * @param postId of post to get
+     * @return Post if found, else Http Error
+     */
     @GetMapping("/{postId}")
     public ResponseEntity<FindPostResponse> findPost(@PathVariable UUID postId) {
 
         return findPostByIdUseCase.execute(PostId.of(postId))
                 .map(post -> ResponseEntity.ok(toResponse(post)))
                 .getOrElseGet(failure -> switch (failure) {
-                    case FindPostByIdUseCase.PostNotFound _ -> ResponseEntity.status(409).build();
+                    case FindPostByIdUseCase.PostNotFound _ -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 });
     }
 
+    // Get Post: response-obj and mapper
     private record FindPostResponse(UUID id, String title, String content) {}
     private FindPostResponse toResponse(Post post) {
         return new FindPostResponse(post.getId().value(), post.getTitle(), post.getContent());
     }
 
+    /**
+     * Toggle like for post with user
+     * @param postId of Post to toggle like on
+     * @param auth like-toggling user
+     * @return Like-list when toggled on, no-content when toggled off (deleted), Http Error when post or user not found
+     */
     @PostMapping("/{postId}/likes")
     public ResponseEntity<Void> toggleLike(@PathVariable UUID postId, @AuthenticationPrincipal AuthenticatedUser auth) {
         var command = new ToggleLikeUseCase.Command(auth.principalId(), PostId.of(postId));
@@ -79,11 +97,16 @@ public class PostController {
                     case DELETED -> ResponseEntity.noContent().build();
                 })
                 .getOrElseGet(failure -> switch (failure) {
-                    case ToggleLikeUseCase.PostNotFoundForLike _ -> ResponseEntity.status(422).build();
-                    case ToggleLikeUseCase.UserNotFoundForLike _ -> ResponseEntity.status(401).build();
+                    case ToggleLikeUseCase.PostNotFoundForLike _ -> ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).build();
+                    case ToggleLikeUseCase.UserNotFoundForLike _ -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                 });
     }
 
+    /**
+     * Delete post
+     * @param postId of Post to delete
+     * @return
+     */
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
         return deletePostByIdUseCase.execute(PostId.of(postId))

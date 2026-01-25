@@ -19,23 +19,37 @@ import lombok.RequiredArgsConstructor;
 public class JpaPostRepository implements PostRepository {
 
     private final SpringDataPostRepository springDataPostRepository;
-    private final PostPersistenceMapper postPersistenceMapper;
 
     @Override
     public Post save(Post post) {
-        PostEntity entity = postPersistenceMapper.fromDomain(post);
+        PostEntity entity = fromDomain(post);
         PostEntity saved = springDataPostRepository.save(entity);
-        return postPersistenceMapper.toDomain(saved);
+        return toDomain(saved);
     }
 
     @Override
     public Optional<Post> findById(PostId id) {
-        return springDataPostRepository.findById(id.value()).map(postPersistenceMapper::toDomain);
+        return springDataPostRepository.findById(id.value()).map(this::toDomain);
     }
 
     @Override
     public void deleteById(PostId id) {
         springDataPostRepository.deleteById(id.value());
     }
-    
+
+    private Post toDomain(PostEntity entity) {
+        return new Post(
+            PostId.of(entity.getId()),
+            entity.getTitle(),
+            entity.getContent()
+        );
+    }
+
+    private PostEntity fromDomain(Post domain) {
+        return new PostEntity(
+            domain.getId().value(),
+            domain.getTitle(),
+            domain.getContent()
+        );
+    } 
 }

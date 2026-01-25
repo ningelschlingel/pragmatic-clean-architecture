@@ -22,18 +22,17 @@ import lombok.RequiredArgsConstructor;
 public class JpaLikeRepository implements LikeRepository {
 
     private final SpringDataLikeRepository springDataLikeRepository;
-    private final LikePersistenceMapper likePersistenceMapper;
 
     @Override
     public Like save(Like like) {
-        LikeEntity entity = likePersistenceMapper.fromDomain(like);
+        LikeEntity entity = fromDomain(like);
         LikeEntity saved = springDataLikeRepository.save(entity);
-        return likePersistenceMapper.toDomain(saved);
+        return toDomain(saved);
     }
 
     @Override
     public List<Like> findByPostId(PostId id) {
-        return springDataLikeRepository.findByPostId(id.value()).stream().map(likePersistenceMapper::toDomain).toList();
+        return springDataLikeRepository.findByPostId(id.value()).stream().map(this::toDomain).toList();
     }
 
     @Override
@@ -43,6 +42,22 @@ public class JpaLikeRepository implements LikeRepository {
 
     @Override
     public Optional<Like> findByLikerIdAndPostId(UserId userId, PostId postId) {
-        return springDataLikeRepository.findByLikerIdAndPostId(userId, postId).map(likePersistenceMapper::toDomain);
+        return springDataLikeRepository.findByLikerIdAndPostId(userId, postId).map(this::toDomain);
     }
+
+    private Like toDomain(LikeEntity entity) {
+        return new Like(
+            LikeId.of(entity.getId()),
+            UserId.of(entity.getLikerId()),
+            PostId.of(entity.getPostId())
+        );
+    }
+
+    private LikeEntity fromDomain(Like domain) {
+        return new LikeEntity(
+            domain.getId().value(),
+            domain.getUserId().value(),
+            domain.getPostId().value()
+        );
+    }  
 }

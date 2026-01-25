@@ -12,14 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import io.ningelschlingel.pca.userauth.core.application.login.LoginUseCase;
-import io.ningelschlingel.pca.userauth.core.application.login.failure.UserCredentialsInvalid;
-import io.ningelschlingel.pca.userauth.core.application.login.failure.UserNotFoundForLogin;
-import io.ningelschlingel.pca.userauth.core.application.register.RegisterUseCase;
-import io.ningelschlingel.pca.userauth.core.application.register.failure.AuthDataInvalid;
-import io.ningelschlingel.pca.userauth.core.application.register.failure.UserAuthExists;
-import io.ningelschlingel.pca.userauth.infrastructure.web.payload.LoginRequest;
-import io.ningelschlingel.pca.userauth.infrastructure.web.payload.RegisterRequest;
+import io.ningelschlingel.pca.shared.core.domain.UserId;
+import io.ningelschlingel.pca.userauth.core.application.LoginUseCase;
+import io.ningelschlingel.pca.userauth.core.application.RegisterUseCase;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,11 +24,16 @@ public class UserAuthController {
 
     private final RegisterUseCase registerUseCase;
     private final LoginUseCase loginUseCase;
-    private final UserAuthHttpMapper userAuthHttpMapper;
 
-    @PostMapping("/register") // TODO the usecase needs to delegate user-profile creation and a nice pattern to get the created-location is needed
+    /**
+     * Register: Creates {@link UserAuthEntity} and also {@link UserEntity} both with identical id.
+     * Handles creation of UserAuth internally, delegates creation of User to UserProfile-Slice.
+     * @param request Register request, also containing minimal information for UserProfile creation.
+     * @return Http-Created: Location of created ressource (User)
+     */
+    @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
-        return registerUseCase.execute(userAuthHttpMapper.toCommand(request))
+        return registerUseCase.execute(toCommand(request))
             .map(result -> {
                 URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                             .path("/{id}")
@@ -45,24 +45,46 @@ public class UserAuthController {
                 .<Void>build();
             })
             .getOrElseGet(failure -> switch (failure) {
-                case UserAuthExists _ -> ResponseEntity.status(409).build();
-                case AuthDataInvalid _ -> ResponseEntity.status(409).build();
+                case RegisterUseCase.UserAuthExists _ -> ResponseEntity.status(409).build();
+                case RegisterUseCase.AuthDataInvalid _ -> ResponseEntity.status(409).build();
             });
     }
 
+    // Register: request-object & mapper
+    private record RegisterRequest(String email, String rawPassword, String fullName) {}
+    private RegisterUseCase.Command toCommand(RegisterRequest request) {
+        return new RegisterUseCase.Command(request.email(), request.rawPassword(), request.fullName());
+    }
+
+    // Register: response-object & mapper
+    public record RegisterResponse (UserId userId,String email) {}
+
+    /**
+     * Login
+     * @param request
+     * @return
+     */
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        return loginUseCase.execute(userAuthHttpMapper.toCommand(request))
-            .map(token -> ResponseEntity
+        return loginUseCase.execute(toCommand(request))
+            .map(result -> ResponseEntity
                     .noContent()
-                    .headers(createJwtCookieHeaders(token))
+                    .headers(createJwtCookieHeaders(result.token()))
                     .<Void>build())
             .getOrElseGet(failure -> switch (failure) {
-                case UserNotFoundForLogin _ -> ResponseEntity.status(403).build();
-                case UserCredentialsInvalid _ -> ResponseEntity.status(403).build();
+                case LoginUseCase.UserNotFoundForLogin _ -> ResponseEntity.status(403).build();
+                case LoginUseCase.UserCredentialsInvalid _ -> ResponseEntity.status(403).build();
             });
     }
 
+    // Login: request-object and mapper
+    private record LoginRequest(String email, String rawPassword) {}
+    private LoginUseCase.Command toCommand(LoginRequest request) {
+        return new LoginUseCase.Command(request.email, request.rawPassword);
+    }
+
+
+    // Helper
     private HttpHeaders createJwtCookieHeaders(String token) {
         ResponseCookie cookie = ResponseCookie.from("auth_token", token)
             .httpOnly(true)
@@ -76,5 +98,4 @@ public class UserAuthController {
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return headers;
     }
-    
 }

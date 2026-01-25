@@ -1,11 +1,8 @@
-package io.ningelschlingel.pca.userauth.core.application.login;
+package io.ningelschlingel.pca.userauth.core.application;
 
 import java.util.Optional;
 
 import io.ningelschlingel.pca.shared.infrastructure.security.JwtService;
-import io.ningelschlingel.pca.userauth.core.application.login.failure.LoginUserFailure;
-import io.ningelschlingel.pca.userauth.core.application.login.failure.UserCredentialsInvalid;
-import io.ningelschlingel.pca.userauth.core.application.login.failure.UserNotFoundForLogin;
 import io.ningelschlingel.pca.userauth.core.domain.UserAuth;
 import io.ningelschlingel.pca.userauth.core.port.out.PasswordHasher;
 import io.ningelschlingel.pca.userauth.core.port.out.UserAuthRepository;
@@ -15,11 +12,23 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class LoginUseCase {
 
+    // Ports
     private final UserAuthRepository userAuthRepository;
     private final PasswordHasher passwordHasher;
     private final JwtService jwtService;
     
-    public Either<LoginUserFailure, String> execute(LoginCommand command) {
+    // Command
+    public record Command(String email, String rawPassword) {}
+
+    // Failure
+    public sealed interface Failure permits UserCredentialsInvalid, UserNotFoundForLogin {}
+    public record UserCredentialsInvalid() implements Failure {}
+    public record UserNotFoundForLogin() implements Failure {}
+
+    // Result
+    public record Result(String token) {};
+
+    public Either<Failure, Result> execute(Command command) {
         Optional<UserAuth> authOpt = userAuthRepository.findByEmail(command.email());
   
         if (authOpt.isEmpty()) {
@@ -32,6 +41,9 @@ public class LoginUseCase {
             return Either.left(new UserCredentialsInvalid());
         }
 
-        return Either.right(jwtService.createToken(auth.getId(), auth.getEmail()));
+        return Either.right(new Result(jwtService.createToken(auth.getId(), auth.getEmail())));
     }
+
+    
+
 }
