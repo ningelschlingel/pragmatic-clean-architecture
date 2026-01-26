@@ -42,7 +42,7 @@ public class JpaLikeRepository implements LikeRepository {
 
     @Override
     public Optional<Like> findByLikerIdAndPostId(UserId userId, PostId postId) {
-        return springDataLikeRepository.findByLikerIdAndPostId(userId, postId).map(this::toDomain);
+        return springDataLikeRepository.findByLikerIdAndPostId(userId.value(), postId.value()).map(this::toDomain);
     }
 
     private Like toDomain(LikeEntity entity) {
