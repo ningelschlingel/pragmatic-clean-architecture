@@ -16,6 +16,9 @@ import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Toggle Like Usecase
+ */
 @Slf4j
 @AllArgsConstructor
 public class ToggleLikeUseCase {
@@ -36,10 +39,11 @@ public class ToggleLikeUseCase {
     // Result
     public record Result(ToggleAction toggleAction, Optional<Like> likeOpt) {}
 
+    // Action
     @Transactional // Ensures atomicity
     public Either<Failure, Result> execute(Command command) {
 
-        // 1. Validation Logic
+        // validate
         if (postRepository.findById(command.postId()).isEmpty()) {
             return Either.left(new PostNotFoundForLike());
         }
@@ -48,7 +52,7 @@ public class ToggleLikeUseCase {
             return Either.left(new UserNotFoundForLike());
         }
 
-        // 2. Business Logic
+        // logic
         return likeRepository.findByLikerIdAndPostId(command.userId(), command.postId())
             .map(existingLike -> {
                 // Case: Delete
@@ -66,7 +70,8 @@ public class ToggleLikeUseCase {
             });
     }
 
-    // Mapping
+    // Mapper
+
     private Like toDomain(Command command) {
         return new Like(LikeId.generate(), command.userId(), command.postId());
     }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import io.ningelschlingel.pca.shared.core.domain.UserId;
 import io.ningelschlingel.pca.userauth.core.application.LoginUseCase;
 import io.ningelschlingel.pca.userauth.core.application.RegisterUseCase;
 import lombok.RequiredArgsConstructor;
@@ -55,9 +54,6 @@ public class UserAuthController {
     private RegisterUseCase.Command toCommand(RegisterRequest request) {
         return new RegisterUseCase.Command(request.email(), request.rawPassword(), request.fullName());
     }
-
-    // Register: response-object & mapper
-    public record RegisterResponse (UserId userId,String email) {}
 
     /**
      * Login

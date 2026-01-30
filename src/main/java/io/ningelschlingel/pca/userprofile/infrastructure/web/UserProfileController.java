@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.ningelschlingel.pca.userprofile.core.application.finduserprofile.FindUserByIdUseCase;
-import io.ningelschlingel.pca.userprofile.core.application.finduserprofile.failure.UserProfileNotFound;
+
+import io.ningelschlingel.pca.userprofile.core.application.FindUserProfileUseCase;
+import io.ningelschlingel.pca.userprofile.core.domain.UserProfile;
 import io.ningelschlingel.pca.shared.core.domain.UserId;
-import io.ningelschlingel.pca.userprofile.infrastructure.web.finduser.FindUserHttpMapper;
-import io.ningelschlingel.pca.userprofile.infrastructure.web.finduser.FindUserResponse;
+import io.ningelschlingel.pca.userauth.infrastructure.web.UserAuthController;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -24,15 +24,27 @@ import lombok.RequiredArgsConstructor;
 public class UserProfileController {
 
     // UseCases
-    private final FindUserByIdUseCase findUserByIdUseCase;
+    private final FindUserProfileUseCase findUserByIdUseCase;
 
+    /**
+     * Find user profile
+     * @param userId
+     * @return
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<FindUserResponse> findUser(@PathVariable UUID userId) {
 
         return findUserByIdUseCase.execute(UserId.of(userId))
-                .map(user -> ResponseEntity.ok(FindUserHttpMapper.toResponse(user)))
+                .map(user -> ResponseEntity.ok(toResponse(user)))
                 .getOrElseGet(failure -> switch (failure) {
-                    case UserProfileNotFound _ -> ResponseEntity.status(404).build();
+                    case FindUserProfileUseCase.UserProfileNotFound _ -> ResponseEntity.status(404).build();
                 });
     }
+
+    // Find user profile response & mapper
+    private record FindUserResponse(UUID id, String email, String fullName) {}
+    private FindUserResponse toResponse(UserProfile user) {
+        return new FindUserResponse(user.getId().value(), user.getEmail(), user.getFullName());
+    }
+
 }

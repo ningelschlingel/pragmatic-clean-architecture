@@ -1,14 +1,13 @@
 package io.ningelschlingel.pca.userprofile.core.application;
 
 import io.ningelschlingel.pca.shared.core.domain.UserId;
-import io.ningelschlingel.pca.userprofile.core.domain.UserFailure;
 import io.ningelschlingel.pca.userprofile.core.domain.UserProfile;
 import io.ningelschlingel.pca.userprofile.core.port.out.UserRepository;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class CreateUserUseCase {
+public class CreateUserProfileUseCase {
 
     // Port
     private final UserRepository userRepository;
@@ -17,10 +16,11 @@ public class CreateUserUseCase {
     public record Command(UserId id, String email, String fullName) {}
 
     // Failure
-    public sealed interface Failure extends UserFailure permits UserExistsAlready, UserDataInvalid {}
+    public sealed interface Failure permits UserExistsAlready, UserDataInvalid {}
     public record UserExistsAlready() implements Failure {}
     public record UserDataInvalid() implements Failure {}
     
+    // Action
     public Either<Failure, UserProfile> execute(Command command) {
         try {
             UserProfile userToSave = fromCommand(command);

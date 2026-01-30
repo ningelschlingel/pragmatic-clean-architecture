@@ -1,6 +1,5 @@
 package io.ningelschlingel.pca.userprofile.core.application.deleteuserprofile;
 
-import io.ningelschlingel.pca.userprofile.core.application.deleteuserprofile.failure.DeleteUserFailure;
 import io.ningelschlingel.pca.shared.core.domain.UserId;
 import io.ningelschlingel.pca.userprofile.infrastructure.persistence.JpaUserRepository;
 import io.vavr.control.Either;
@@ -9,9 +8,15 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DeleteUserByIdUseCase {
 
+    // Ports
     private final JpaUserRepository jpaRepository;
 
-    public Either<DeleteUserFailure, Void> execute(UserId id){
+    // Failure
+    public sealed interface Failure permits DeleteUserNotAllowed {}
+    public record DeleteUserNotAllowed() implements Failure {}
+
+    // Action
+    public Either<Failure, Void> execute(UserId id){
         jpaRepository.deleteById(id);
         return Either.right(null);
     }

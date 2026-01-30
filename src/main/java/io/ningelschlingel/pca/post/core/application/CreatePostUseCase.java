@@ -34,6 +34,7 @@ public class CreatePostUseCase {
     // Result
     public record Result(UUID postId, String title, String content) {}
     
+    // Action
     public Either<Failure, Result> execute(Command command) {
         try {
             // 1. Map command to Domain Entity and Save it
@@ -49,6 +50,7 @@ public class CreatePostUseCase {
     }
 
     // Mappers
+    
     private Post toDomain(Command command) {
         return new Post(PostId.generate(), command.title(), command.content());
     }
