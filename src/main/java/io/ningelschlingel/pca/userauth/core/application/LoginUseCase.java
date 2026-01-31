@@ -2,6 +2,8 @@ package io.ningelschlingel.pca.userauth.core.application;
 
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.ningelschlingel.pca.shared.infrastructure.security.JwtService;
 import io.ningelschlingel.pca.userauth.core.domain.UserAuth;
 import io.ningelschlingel.pca.userauth.core.port.out.PasswordHasher;
@@ -28,6 +30,8 @@ public class LoginUseCase {
     // Result
     public record Result(String token) {};
 
+    // Action
+    @Transactional // Pragmatic trade off
     public Either<Failure, Result> execute(Command command) {
         Optional<UserAuth> authOpt = userAuthRepository.findByEmail(command.email());
   

@@ -46,13 +46,35 @@ The Infrastructure layer provides the implementation for the Core's contracts.
 
 ---
 
+## 📦 Self-Contained Contracts & Localized Mapping
+
+This project favors **locality of reference**. We consolidate contracts and translation logic exactly where they are used, but only when the complexity justifies it.
+
+#### 1. The "As-Needed" UseCase Contract
+Every UseCase acts as the "Single Source of Truth" for its specific action, but we avoid "ghost" abstractions:
+* **No Artificial Wrappers:** If a UseCase only requires a single identifier (e.g., `PostId`), we pass it directly. We only define a nested `Command` record for complex, multi-parameter inputs.
+* **Flexible Outputs:** We only define a nested `Result` record if the operation needs to return data. For "fire and forget" operations, we simply use `Either<Failure, Void>`.
+* **Sealed Failures:** We define a nested `sealed interface` for business errors. This allows the Web layer to use exhaustive `switch` expressions, ensuring every failure case is handled at compile-time.
+* **Internal Mapping:** Private methods within the UseCase handle the mapping from `Command` to `Domain Entity`, keeping the logic self-contained.
+
+#### 2. Localized Web Mapping
+In the `Web` layer, `Request` and `Response` DTOs are defined as private records directly within the Controller.
+* **No Global DTOs:** API-specific structures live where they are used. This prevents a "DTO Junk Drawer" where objects are reused and leaked across unrelated endpoints.
+* **Direct Mapping:** The Controller is responsible for transforming its private DTOs into UseCase inputs. This keeps the Core completely unaware of the Web/JSON contract.
+
+**Benefit:** You can understand the entire business rule and its external interface by reading one or two files from top to bottom, rather than jumping between five different packages.
+
+---
+
 ## 🛠️ Key Technical Decisions
 
 | Decision | Rationale |
 | :--- | :--- |
+| **Consolidated Contracts** | Command, Result, and Failure types are nested inside the UseCase. This keeps the "API" of the business logic highly discoverable. |
+| **Pragmatic Transactions** | UseCases utilize `@Transactional` to ensure atomicity. We accept this Spring dependency in the Core to gain robust transaction propagation. |
 | **No UseCase Interfaces** | Since most UseCases have only one implementation, we skip the interface to reduce file bloat. |
 | **Vavr `Either`** | Replaces runtime exceptions with explicit return types, forcing compile-time error handling. |
-| **Internal Mapping** | Mapping logic is encapsulated within the Persistence Adapter. This keeps the Core "pure" and the schema details hidden. |
+| **Internal Mapping** | Mapping logic (DTO -> Command, Command -> Domain) is kept private within the classes. This prevents "Mapper-Class Bloat" and keeps translation logic close to the data it processes. |
 | **Manual Bean Wiring** | UseCases are instantiated in `@Configuration` classes to ensure the Core remains 100% framework-independent. |
 
 ---

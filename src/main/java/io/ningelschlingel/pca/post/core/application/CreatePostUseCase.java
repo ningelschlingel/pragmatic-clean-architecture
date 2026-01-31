@@ -2,6 +2,8 @@ package io.ningelschlingel.pca.post.core.application;
 
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.ningelschlingel.pca.post.core.domain.Post;
 import io.ningelschlingel.pca.post.core.domain.PostId;
 import io.ningelschlingel.pca.post.core.port.out.PostRepository;
@@ -35,6 +37,7 @@ public class CreatePostUseCase {
     public record Result(UUID postId, String title, String content) {}
     
     // Action
+    @Transactional // Pragmatic trade off
     public Either<Failure, Result> execute(Command command) {
         try {
             // 1. Map command to Domain Entity and Save it
@@ -58,5 +61,4 @@ public class CreatePostUseCase {
     private Result toResult(Post post) {
         return new Result(post.getId().value(), post.getTitle(), post.getContent());
     }
-
 }

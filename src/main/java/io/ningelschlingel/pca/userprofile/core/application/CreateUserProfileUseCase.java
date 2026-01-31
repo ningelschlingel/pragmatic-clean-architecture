@@ -1,5 +1,7 @@
 package io.ningelschlingel.pca.userprofile.core.application;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.ningelschlingel.pca.shared.core.domain.UserId;
 import io.ningelschlingel.pca.userprofile.core.domain.UserProfile;
 import io.ningelschlingel.pca.userprofile.core.port.out.UserRepository;
@@ -21,6 +23,7 @@ public class CreateUserProfileUseCase {
     public record UserDataInvalid() implements Failure {}
     
     // Action
+    @Transactional // Pragmatic trade off
     public Either<Failure, UserProfile> execute(Command command) {
         try {
             UserProfile userToSave = fromCommand(command);

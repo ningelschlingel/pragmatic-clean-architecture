@@ -1,5 +1,7 @@
 package io.ningelschlingel.pca.post.core.application;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.ningelschlingel.pca.post.core.domain.PostId;
 import io.ningelschlingel.pca.post.core.port.out.PostRepository;
 import io.vavr.control.Either;
@@ -19,6 +21,7 @@ public class DeletePostUseCase {
     public record NotAllowed() implements Failure {}
 
     // Action
+    @Transactional
     public Either<Failure, Void> execute(PostId id){
         postRepository.deleteById(id);
         return Either.right(null);

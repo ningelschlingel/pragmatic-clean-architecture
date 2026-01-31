@@ -1,5 +1,7 @@
 package io.ningelschlingel.pca.userauth.core.application;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.ningelschlingel.pca.shared.core.domain.UserId;
 import io.ningelschlingel.pca.userauth.core.port.out.UserAuthRepository;
 import io.ningelschlingel.pca.userauth.core.port.out.UserProfileDeleter;
@@ -18,6 +20,7 @@ public class UnregisterUseCase {
     public record DeleteUserNotAllowed() implements Failure {}
 
     // Action
+    @Transactional // Pragmatic trade off
     public Either<Failure, Void> execute(UserId id){
         userAuthRepository.deleteById(id);
         userProfileDeleter.deleteUserProfile(id);

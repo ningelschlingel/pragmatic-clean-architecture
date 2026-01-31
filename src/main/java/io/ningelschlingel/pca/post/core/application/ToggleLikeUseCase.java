@@ -40,7 +40,7 @@ public class ToggleLikeUseCase {
     public record Result(ToggleAction toggleAction, Optional<Like> likeOpt) {}
 
     // Action
-    @Transactional // Ensures atomicity
+    @Transactional // Pragmatic trade off
     public Either<Failure, Result> execute(Command command) {
 
         // validate

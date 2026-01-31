@@ -1,5 +1,7 @@
 package io.ningelschlingel.pca.userauth.core.application;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.ningelschlingel.pca.shared.core.domain.UserId;
 import io.ningelschlingel.pca.shared.infrastructure.security.JwtService;
 import io.ningelschlingel.pca.userauth.core.domain.UserAuth;
@@ -32,6 +34,7 @@ public class RegisterUseCase {
     public record RegisterResult (String jwtToken, UserId userId, String email) {}
 
     // Action
+    @Transactional // Pragmatic trade off
     public Either<Failure, RegisterResult> execute(Command command) {
         try {
 
