@@ -1,4 +1,4 @@
-package io.ningelschlingel.pca.userprofile.core.application.finduserprofile;
+package io.ningelschlingel.pca.userprofile.core.application;
 
 import io.ningelschlingel.pca.userprofile.core.domain.UserProfile;
 import io.ningelschlingel.pca.shared.core.domain.UserId;
@@ -7,7 +7,7 @@ import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class FindUserByIdUseCase {
+public class FindUserProfileUseCase {
     
     // Ports
     private final UserRepository userRepository;

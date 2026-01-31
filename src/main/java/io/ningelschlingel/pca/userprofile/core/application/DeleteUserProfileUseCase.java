@@ -1,4 +1,4 @@
-package io.ningelschlingel.pca.userprofile.core.application.deleteuserprofile;
+package io.ningelschlingel.pca.userprofile.core.application;
 
 import io.ningelschlingel.pca.shared.core.domain.UserId;
 import io.ningelschlingel.pca.userprofile.infrastructure.persistence.JpaUserRepository;
@@ -6,7 +6,7 @@ import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class DeleteUserByIdUseCase {
+public class DeleteUserProfileUseCase {
 
     // Ports
     private final JpaUserRepository jpaRepository;

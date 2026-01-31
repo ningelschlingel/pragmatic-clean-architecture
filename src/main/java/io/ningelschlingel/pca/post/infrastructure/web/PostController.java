@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.ningelschlingel.pca.post.core.application.CreatePostUseCase;
-import io.ningelschlingel.pca.post.core.application.DeletePostByIdUseCase;
-import io.ningelschlingel.pca.post.core.application.FindPostByIdUseCase;
+import io.ningelschlingel.pca.post.core.application.DeletePostUseCase;
+import io.ningelschlingel.pca.post.core.application.FindPostUseCase;
 import io.ningelschlingel.pca.post.core.application.ToggleLikeUseCase;
 import io.ningelschlingel.pca.post.core.domain.Post;
 import io.ningelschlingel.pca.post.core.domain.PostId;
@@ -30,8 +30,8 @@ import lombok.AllArgsConstructor;
 public class PostController {
 
     private final CreatePostUseCase createPostUseCase;
-    private final FindPostByIdUseCase findPostByIdUseCase;
-    private final DeletePostByIdUseCase deletePostByIdUseCase;
+    private final FindPostUseCase findPostByIdUseCase;
+    private final DeletePostUseCase deletePostByIdUseCase;
     private final ToggleLikeUseCase toggleLikeUseCase;
 
     /**
@@ -71,7 +71,7 @@ public class PostController {
         return findPostByIdUseCase.execute(PostId.of(postId))
                 .map(post -> ResponseEntity.ok(toResponse(post)))
                 .getOrElseGet(failure -> switch (failure) {
-                    case FindPostByIdUseCase.PostNotFound _ -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    case FindPostUseCase.PostNotFound _ -> ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 });
     }
 
@@ -112,7 +112,7 @@ public class PostController {
         return deletePostByIdUseCase.execute(PostId.of(postId))
                 .map(success -> ResponseEntity.noContent().<Void>build())
                 .getOrElseGet(failure -> switch (failure) {
-                    case DeletePostByIdUseCase.NotAllowed _ -> ResponseEntity.status(403).build();
+                    case DeletePostUseCase.NotAllowed _ -> ResponseEntity.status(403).build();
                 });
     }
 
