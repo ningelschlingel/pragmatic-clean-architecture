@@ -3,6 +3,10 @@ package io.ningelschlingel.pca.shared.core.domain;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Base class for UUID wrappers
+ * Prevents accidental passing of different id-type
+ */
 public abstract class Identifier {
     private final UUID value;
 

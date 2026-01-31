@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.ningelschlingel.pca.userprofile.core.application.CreateUserUseCase;
-import io.ningelschlingel.pca.userprofile.core.application.deleteuserprofile.DeleteUserByIdUseCase;
-import io.ningelschlingel.pca.userprofile.core.application.finduserprofile.FindUserByIdUseCase;
+import io.ningelschlingel.pca.userprofile.core.application.CreateUserProfileUseCase;
+import io.ningelschlingel.pca.userprofile.core.application.DeleteUserProfileUseCase;
+import io.ningelschlingel.pca.userprofile.core.application.FindUserProfileUseCase;
 import io.ningelschlingel.pca.userprofile.infrastructure.persistence.JpaUserRepository;
 
 @Configuration
@@ -20,19 +20,19 @@ public class UserConfiguration {
 
     @Bean
     @Transactional
-    public CreateUserUseCase createUserUseCase() {
-        return new CreateUserUseCase(jpaUserRepository);
+    public CreateUserProfileUseCase createUserUseCase() {
+        return new CreateUserProfileUseCase(jpaUserRepository);
     }
 
     @Bean
     @Transactional
-    public FindUserByIdUseCase findUserByIdUseCase() {
-        return new FindUserByIdUseCase(jpaUserRepository);
+    public FindUserProfileUseCase findUserByIdUseCase() {
+        return new FindUserProfileUseCase(jpaUserRepository);
     }
 
     @Bean
     @Transactional
-    public DeleteUserByIdUseCase deleteUserUseCase() {
-        return new DeleteUserByIdUseCase(jpaUserRepository);
+    public DeleteUserProfileUseCase deleteUserUseCase() {
+        return new DeleteUserProfileUseCase(jpaUserRepository);
     }
 }

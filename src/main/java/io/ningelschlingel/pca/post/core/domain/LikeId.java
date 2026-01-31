@@ -4,6 +4,10 @@ import java.util.UUID;
 
 import io.ningelschlingel.pca.shared.core.domain.Identifier;
 
+/**
+ * Like UUID wrapper
+ * Prevents accidental passing of different id-type
+ */
 public final class LikeId extends Identifier {
     
     private LikeId(UUID value) { super(value); }

@@ -2,6 +2,10 @@ package io.ningelschlingel.pca.shared.core.domain;
 
 import java.util.UUID;
 
+/**
+ * User UUID wrapper
+ * Prevents accidental passing of different id-type
+ */
 public final class UserId extends Identifier {
     
     private UserId(UUID value) { super(value); }
